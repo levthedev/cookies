@@ -14,16 +14,22 @@ RSpec.describe Ingredient, type: :model do
   end
 
   describe "substitutes" do
+    let(:substitute) { Ingredient.create! name: "splenda" }
+
     it "responds to substitutes" do
       expect(ingredient).to respond_to(:substitutes)
     end
 
     it "adds substitutes bi-directionally" do
-      sub_ingredient = Ingredient.create! name: "splenda"
-      ingredient.add_substitute(sub_ingredient)
 
-      expect(ingredient.substitutes).to include(sub_ingredient)
-      expect(sub_ingredient.substitutes).to include(ingredient)
+      ingredient.add_substitute(substitute)
+
+      expect(ingredient.substitutes).to include(substitute)
+      expect(substitute.substitutes).to include(ingredient)
+    end
+
+    it "doesn't let itself to be set as a substitute for itself" do
+
     end
   end
 end
