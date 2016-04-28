@@ -1,17 +1,11 @@
 class AddIngredientSubstitute < ActiveRecord::Migration
-  def self.up
+  def change
     create_table :substitutions, id: false do |t|
       t.integer :ingredient_id
-      t.integer :ingredient_sub_id
+      t.integer :substitution_id
     end
 
-    add_index(:substitutions, [:ingredient_id, :ingredient_sub_id], :unique => true)
-    add_index(:substitutions, [:ingredient_sub_id, :ingredient_id], :unique => true)
-  end
-
-  def self.down
-    remove_index(:substitutions, [:ingredient_sub_id, :ingredient_id])
-    remove_index(:substitutions, [:ingredient_id, :ingredient_sub_id])
-    drop_table :substitutions
+    add_index(:substitutions, [:ingredient_id, :substitution_id], :unique => true)
+    add_index(:substitutions, [:substitution_id, :ingredient_id], :unique => true)
   end
 end
