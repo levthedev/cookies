@@ -30,7 +30,4 @@ ActiveRecord::Schema.define(version: 20160428163239) do
     t.integer "substitution_id"
   end
 
-  add_index "substitutions", ["ingredient_id", "substitution_id"], name: "index_substitutions_on_ingredient_id_and_substitution_id", unique: true, using: :btree
-  add_index "substitutions", ["substitution_id", "ingredient_id"], name: "index_substitutions_on_substitution_id_and_ingredient_id", unique: true, using: :btree
-
 end

@@ -2,8 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Ingredient, type: :model do
   let(:ingredient) do
-    ingredient_attributes = { name: "sugar", calories: 400, price: 700 }
-    Ingredient.create!(ingredient_attributes)
+    Ingredient.create!(name: "sugar")
   end
 
   it "validates presence of name" do
@@ -14,14 +13,14 @@ RSpec.describe Ingredient, type: :model do
   end
 
   describe "substitutes" do
-    let(:substitute) { Ingredient.create! name: "splenda" }
+    let!(:substitute) { Ingredient.create! name: "splenda" }
+    # before(:each) { ingredient.add_substitute(substitute) }
 
     it "responds to substitutes" do
       expect(ingredient).to respond_to(:substitutes)
     end
 
     it "adds substitutes bi-directionally" do
-
       ingredient.add_substitute(substitute)
 
       expect(ingredient.substitutes).to include(substitute)

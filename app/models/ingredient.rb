@@ -8,8 +8,14 @@ class Ingredient < ActiveRecord::Base
                           association_foreign_key: :substitution_id,
                           dependent: :destroy
 
+
   def add_substitute(ingredient)
-    self.substitutes << ingredient unless self.substitutes.include? ingredient || ingredient == self
-    ingredient.substitutes << self unless ingredient.substitutes.include? self || ingredient == self
+    unless self.substitutes.include?(ingredient) || ingredient == self
+      self.substitutes << ingredient
+    end
+
+    unless ingredient.substitutes.include?(self) || ingredient == self
+      ingredient.substitutes << self
+    end
   end
 end
