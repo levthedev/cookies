@@ -11,10 +11,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160428163239) do
+ActiveRecord::Schema.define(version: 20160429201539) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "cookies", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "cookies_ingredients", force: :cascade do |t|
+    t.boolean  "allowed",       default: true, null: false
+    t.integer  "ingredient_id"
+    t.integer  "cookie_id"
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+  end
+
+  add_index "cookies_ingredients", ["cookie_id"], name: "index_cookies_ingredients_on_cookie_id", using: :btree
+  add_index "cookies_ingredients", ["ingredient_id"], name: "index_cookies_ingredients_on_ingredient_id", using: :btree
 
   create_table "ingredients", force: :cascade do |t|
     t.string   "name"
@@ -30,4 +47,6 @@ ActiveRecord::Schema.define(version: 20160428163239) do
     t.integer "substitution_id"
   end
 
+  add_foreign_key "cookies_ingredients", "cookies"
+  add_foreign_key "cookies_ingredients", "ingredients"
 end
