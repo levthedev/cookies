@@ -14,3 +14,8 @@
 # ActiveSupport::Inflector.inflections(:en) do |inflect|
 #   inflect.acronym 'RESTful'
 # end
+
+ActiveSupport::Inflector.inflections do |inflect|
+  inflect.irregular 'cookie', 'cookies'
+  inflect.irregular 'cookie_ingredient', 'cookies_ingredients'
+end
