@@ -14,21 +14,34 @@ RSpec.describe Ingredient, type: :model do
 
   describe "substitutes" do
     let!(:substitute) { Ingredient.create! name: "splenda" }
-    # before(:each) { ingredient.add_substitute(substitute) }
+    before(:each) { ingredient.add_substitute(substitute) }
 
     it "responds to substitutes" do
       expect(ingredient).to respond_to(:substitutes)
     end
 
-    it "adds substitutes bi-directionally" do
-      ingredient.add_substitute(substitute)
+    it "can have many substitutes" do
+      new_substitute = Ingredient.create! name: "raw sugar"
+      ingredient.add_substitute(new_substitute)
 
+      expect(ingredient.substitutes.length).to eq(2)
+    end
+
+    it "adds substitutes bi-directionally" do
       expect(ingredient.substitutes).to include(substitute)
       expect(substitute.substitutes).to include(ingredient)
     end
 
     it "doesn't let itself to be set as a substitute for itself" do
+      expect(ingredient.substitutes.length).to be(1)
+      ingredient.add_substitute(ingredient)
+      expect(ingredient.substitutes.length).to be(1)
+    end
 
+    it "doesn't allow repeat substitutes" do
+      expect(ingredient.substitutes.length).to be(1)
+      ingredient.add_substitute(substitute)
+      expect(ingredient.substitutes.length).to be(1)
     end
   end
 end
