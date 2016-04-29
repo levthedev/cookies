@@ -8,6 +8,8 @@ class Ingredient < ActiveRecord::Base
                           association_foreign_key: :substitution_id,
                           dependent: :destroy
 
+  has_many :cookies_ingredients
+  has_many :cookies, through: :cookies_ingredients
 
   def add_substitute(ingredient)
     unless self.substitutes.include?(ingredient) || ingredient == self

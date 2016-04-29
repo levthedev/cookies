@@ -44,4 +44,18 @@ RSpec.describe Ingredient, type: :model do
       expect(ingredient.substitutes.length).to be(1)
     end
   end
+
+  describe "cookies_ingredients" do
+    it "has many cookies through cookies_ingredients" do
+      gf_cookie = Cookie.create!(name: "gluten free")
+      vegan_cookie = Cookie.create!(name: "vegan")
+
+      ingredient.cookies << gf_cookie
+      ingredient.cookies << vegan_cookie
+
+      expect(ingredient.cookies.length).to be(2)
+      expect(ingredient.cookies).to include(gf_cookie)
+      expect(ingredient.cookies).to include(vegan_cookie)
+    end
+  end
 end
