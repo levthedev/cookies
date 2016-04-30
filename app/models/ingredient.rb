@@ -14,8 +14,8 @@ class Ingredient < ActiveRecord::Base
   has_many :stores, through: :store_ingredients
 
   def add_substitute(ingredient)
-    unless self.substitutes.include?(ingredient) || ingredient == self
-      self.substitutes << ingredient
+    unless substitutes.include?(ingredient) || ingredient == self
+      substitutes << ingredient
     end
 
     unless ingredient.substitutes.include?(self) || ingredient == self

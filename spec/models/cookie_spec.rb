@@ -1,11 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe Cookie, type: :model do
-  let(:cookie)    { Cookie.create!(name: "basic")         }
-  let(:butter)    { Ingredient.create! name: "butter"     }
-  let(:salt)      { Ingredient.create! name: "salt"       }
-  let(:flour)     { Ingredient.create!(name: "flour")     }
-  let(:chocolate) { Ingredient.create!(name: "chocolate") }
+  let(:cookie)    { Cookie.create!(name: "basic")                        }
+  let(:butter)    { Ingredient.create!(name: "butter", calories: 200)    }
+  let(:salt)      { Ingredient.create!(name: "salt", calories: 10)       }
+  let(:flour)     { Ingredient.create!(name: "flour", calories: 50)     }
+  let(:chocolate) { Ingredient.create!(name: "chocolate", calories: 300) }
 
   it "has ingredients through cookies_ingredients" do
     cookie.cookies_ingredients << CookieIngredient.create!(ingredient: butter)
@@ -25,11 +25,19 @@ RSpec.describe Cookie, type: :model do
   end
 
   describe("parent/child cookies") do
-    let(:sugar_cookie)     { Cookie.create!(name: "sugar_cookie") }
-    let(:chocolate_cookie) { Cookie.create!(name: "chocolate")    }
+    let!(:sugar_cookie)     { Cookie.create!(name: "sugar_cookie") }
+    let!(:chocolate_cookie) { Cookie.create!(name: "chocolate")    }
+
+    before(:each) do
+      cookie.cookies_ingredients        << CookieIngredient.create!(ingredient: flour)
+      sugar_cookie.cookies_ingredients  << CookieIngredient.create!(ingredient: butter)
+      sugar_cookie.cookies_ingredients  << CookieIngredient.create!(ingredient: salt)
+      sugar_cookie.update!(parent_cookie: cookie)
+      chocolate_cookie.update!(parent_cookie: sugar_cookie)
+      chocolate_cookie.cookies_ingredients << CookieIngredient.create!(ingredient: chocolate)
+    end
 
     it "can have a parent cookie and many child cookies" do
-      sugar_cookie.update!(parent_cookie: cookie)
       vegan = Cookie.create!(name: "vegan")
       paleo = Cookie.create!(name: "paleo")
       sugar_cookie.child_cookies << vegan
@@ -42,14 +50,13 @@ RSpec.describe Cookie, type: :model do
     end
 
     it "traverses it's parents to find all of it's ingredients" do
-      cookie.cookies_ingredients        << CookieIngredient.create!(ingredient: flour)
-      sugar_cookie.cookies_ingredients  << CookieIngredient.create!(ingredient: butter)
-      sugar_cookie.cookies_ingredients  << CookieIngredient.create!(ingredient: salt)
-      sugar_cookie.update!(parent_cookie: cookie)
-      chocolate_cookie.update!(parent_cookie: sugar_cookie)
-      chocolate_cookie.cookies_ingredients << CookieIngredient.create!(ingredient: chocolate)
-
       expect(chocolate_cookie.all_ingredients).to include(butter, salt, flour, chocolate)
+    end
+
+    describe "helper methods" do
+      it "sums up all the calories of allowed ingredients" do
+        expect(chocolate_cookie.calories).to eq(560)
+      end
     end
   end
 end

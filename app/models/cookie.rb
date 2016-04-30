@@ -11,4 +11,8 @@ class Cookie < ActiveRecord::Base
     end
     @ingredients
   end
+
+  def calories
+    all_ingredients.reduce(0) { |memo, ing| memo += ing.calories.to_i }
+  end
 end
