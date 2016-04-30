@@ -1,8 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe CookieIngredient, type: :model do
+  let(:cookie_ingredient) { CookieIngredient.create! }
+
   it "defaults allowed to true" do
-    cookie_ingredient = CookieIngredient.create!
     expect(cookie_ingredient.allowed).to be(true)
   end
 

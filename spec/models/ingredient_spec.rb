@@ -1,9 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Ingredient, type: :model do
-  let(:ingredient) do
-    Ingredient.create!(name: "sugar")
-  end
+  let(:ingredient) { Ingredient.create!(name: "sugar") }
 
   it "validates presence of name" do
     bad_ingredient = Ingredient.create
@@ -14,7 +12,7 @@ RSpec.describe Ingredient, type: :model do
 
   describe "substitutes" do
     let!(:substitute) { Ingredient.create! name: "splenda" }
-    before(:each) { ingredient.add_substitute(substitute) }
+    before(:each)     { ingredient.add_substitute(substitute) }
 
     it "responds to substitutes" do
       expect(ingredient).to respond_to(:substitutes)
@@ -54,8 +52,7 @@ RSpec.describe Ingredient, type: :model do
       ingredient.cookies << vegan_cookie
 
       expect(ingredient.cookies.length).to be(2)
-      expect(ingredient.cookies).to include(gf_cookie)
-      expect(ingredient.cookies).to include(vegan_cookie)
+      expect(ingredient.cookies).to include(gf_cookie, vegan_cookie)
     end
   end
 end

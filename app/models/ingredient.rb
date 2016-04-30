@@ -10,6 +10,8 @@ class Ingredient < ActiveRecord::Base
 
   has_many :cookies_ingredients
   has_many :cookies, through: :cookies_ingredients
+  has_many :store_ingredients
+  has_many :stores, through: :store_ingredients
 
   def add_substitute(ingredient)
     unless self.substitutes.include?(ingredient) || ingredient == self
