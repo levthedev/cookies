@@ -1,40 +1,35 @@
 require 'rails_helper'
 
 RSpec.describe Cookie, type: :model do
-  let(:cookie)    { Cookie.create!(name: "basic")                        }
-  let(:butter)    { Ingredient.create!(name: "butter", calories: 200)    }
-  let(:salt)      { Ingredient.create!(name: "salt", calories: 10)       }
-  let(:flour)     { Ingredient.create!(name: "flour", calories: 50)     }
-  let(:chocolate) { Ingredient.create!(name: "chocolate", calories: 300) }
+  let(:cookie) { Cookie.create!(name: "basic")                                    }
+  let(:butter) { Ingredient.create!(name: "butter", calories: 200, price: 200)    }
+  let(:salt)   { Ingredient.create!(name: "salt", calories: 10, price: 300)       }
+  let(:flour)  { Ingredient.create!(name: "flour", calories: 50, price: 500)      }
+  let(:choc)   { Ingredient.create!(name: "chocolate", calories: 300, price: 700) }
+
+  before(:each) do
+    cookie.cookies_ingredients << CookieIngredient.create!(ingredient: flour)
+  end
 
   it "has ingredients through cookies_ingredients" do
-    cookie.cookies_ingredients << CookieIngredient.create!(ingredient: butter)
-    cookie.cookies_ingredients << CookieIngredient.create!(ingredient: salt)
-
-    expect(cookie.ingredients.length).to be(2)
-    expect(cookie.ingredients).to include(butter)
-    expect(cookie.ingredients).to include(salt)
+    expect(cookie.ingredients.length).to be(1)
+    expect(cookie.ingredients).to include(flour)
   end
 
   it "rejects ingredients that are not allowed" do
-    forbidden_ingredient = Ingredient.create(name: "dairy")
-    forbidden_params     = { ingredient: forbidden_ingredient, allowed: false }
-    cookie.cookies_ingredients.create!(forbidden_params)
-
-    expect(cookie.ingredients).not_to include(forbidden_ingredient)
+    expect(cookie.ingredients).not_to include(salt)
   end
 
   describe("parent/child cookies") do
     let!(:sugar_cookie)     { Cookie.create!(name: "sugar_cookie") }
-    let!(:chocolate_cookie) { Cookie.create!(name: "chocolate")    }
+    let!(:choc_cookie) { Cookie.create!(name: "chocolate")         }
 
     before(:each) do
-      cookie.cookies_ingredients        << CookieIngredient.create!(ingredient: flour)
       sugar_cookie.cookies_ingredients  << CookieIngredient.create!(ingredient: butter)
-      sugar_cookie.cookies_ingredients  << CookieIngredient.create!(ingredient: salt)
+      sugar_cookie.cookies_ingredients  << CookieIngredient.create!(ingredient: salt, allowed: false)
       sugar_cookie.update!(parent_cookie: cookie)
-      chocolate_cookie.update!(parent_cookie: sugar_cookie)
-      chocolate_cookie.cookies_ingredients << CookieIngredient.create!(ingredient: chocolate)
+      choc_cookie.update!(parent_cookie: sugar_cookie)
+      choc_cookie.cookies_ingredients << CookieIngredient.create!(ingredient: choc)
     end
 
     it "can have a parent cookie and many child cookies" do
@@ -49,13 +44,18 @@ RSpec.describe Cookie, type: :model do
       expect(paleo.parent_cookie).to eq(sugar_cookie)
     end
 
-    it "traverses it's parents to find all of it's ingredients" do
-      expect(chocolate_cookie.all_ingredients).to include(butter, salt, flour, chocolate)
+    it "traverses it's parents to find all of it's allowed ingredients" do
+      expect(choc_cookie.all_ingredients).to include(butter, flour, choc)
+      expect(choc_cookie.all_ingredients).to_not include(salt)
     end
 
     describe "helper methods" do
       it "sums up all the calories of allowed ingredients" do
-        expect(chocolate_cookie.calories).to eq(560)
+        expect(choc_cookie.calories).to eq(550)
+      end
+
+      it "sums up the price of allowed ingredients" do
+        expect(choc_cookie.price).to eq(1400)
       end
     end
   end
