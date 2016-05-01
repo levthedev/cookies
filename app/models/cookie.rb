@@ -7,12 +7,23 @@ class Cookie < ActiveRecord::Base
   belongs_to :parent_cookie, :class_name => "Cookie", :foreign_key => :parent_cookie_id
   has_many :child_cookies, :class_name => "Cookie", :foreign_key => :parent_cookie_id
 
-  def all_ingredients
-    @ingredients = ingredients
-    if parent_cookie
-      @ingredients << parent_cookie.all_ingredients
+  def all_ingredients(ingredients_memo = [ingredients])
+    all_parents.each do |parent|
+      ingredients_memo << parent.ingredients.select do |i|
+        i if parent.allowed?(i) && allowed?(i) && !ingredients_memo.flatten.include?(i)
+      end
     end
-    @ingredients.select { |ing| ing if allowed?(ing) }
+    ingredients_memo.flatten
+  end
+
+  def all_parents
+    parents = [parent_cookie]
+    parents << parent_cookie.all_parents if parent_cookie
+    parents.flatten.compact
+  end
+
+  def allowed?(ingredient)
+    diets.map { |diet| diet.allowed_ingredient?(ingredient) }.all?
   end
 
   def calories
@@ -21,9 +32,5 @@ class Cookie < ActiveRecord::Base
 
   def price
     all_ingredients.reduce(0) { |memo, ing| memo += ing.price.to_i }
-  end
-
-  def allowed?(ingredient)
-    diets.map { |diet| diet.allowed_ingredient?(ingredient) }.all?
   end
 end
