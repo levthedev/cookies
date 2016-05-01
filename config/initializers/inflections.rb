@@ -18,4 +18,5 @@
 ActiveSupport::Inflector.inflections do |inflect|
   inflect.irregular 'cookie', 'cookies'
   inflect.irregular 'cookie_ingredient', 'cookies_ingredients'
+  inflect.irregular 'diet_ingredient', 'diets_ingredients'
 end

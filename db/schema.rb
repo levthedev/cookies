@@ -11,10 +11,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160430204602) do
+ActiveRecord::Schema.define(version: 20160430235354) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "cookie_diets", force: :cascade do |t|
+    t.integer  "cookie_id"
+    t.integer  "diet_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  add_index "cookie_diets", ["cookie_id"], name: "index_cookie_diets_on_cookie_id", using: :btree
+  add_index "cookie_diets", ["diet_id"], name: "index_cookie_diets_on_diet_id", using: :btree
 
   create_table "cookies", force: :cascade do |t|
     t.string   "name"
@@ -24,15 +34,30 @@ ActiveRecord::Schema.define(version: 20160430204602) do
   end
 
   create_table "cookies_ingredients", force: :cascade do |t|
-    t.boolean  "allowed",       default: true, null: false
     t.integer  "ingredient_id"
     t.integer  "cookie_id"
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
   end
 
   add_index "cookies_ingredients", ["cookie_id"], name: "index_cookies_ingredients_on_cookie_id", using: :btree
   add_index "cookies_ingredients", ["ingredient_id"], name: "index_cookies_ingredients_on_ingredient_id", using: :btree
+
+  create_table "diets", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "diets_ingredients", force: :cascade do |t|
+    t.integer  "diet_id"
+    t.integer  "ingredient_id"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+  end
+
+  add_index "diets_ingredients", ["diet_id"], name: "index_diets_ingredients_on_diet_id", using: :btree
+  add_index "diets_ingredients", ["ingredient_id"], name: "index_diets_ingredients_on_ingredient_id", using: :btree
 
   create_table "ingredients", force: :cascade do |t|
     t.string   "name"
@@ -65,8 +90,12 @@ ActiveRecord::Schema.define(version: 20160430204602) do
     t.integer "substitution_id"
   end
 
+  add_foreign_key "cookie_diets", "cookies"
+  add_foreign_key "cookie_diets", "diets"
   add_foreign_key "cookies_ingredients", "cookies"
   add_foreign_key "cookies_ingredients", "ingredients"
+  add_foreign_key "diets_ingredients", "diets"
+  add_foreign_key "diets_ingredients", "ingredients"
   add_foreign_key "store_ingredients", "ingredients"
   add_foreign_key "store_ingredients", "stores"
 end

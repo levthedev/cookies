@@ -11,8 +11,8 @@ RSpec.describe Ingredient, type: :model do
   end
 
   describe "substitutes" do
-    let!(:substitute) { Ingredient.create! name: "splenda" }
-    before(:each)     { ingredient.add_substitute(substitute) }
+    let(:substitute) { Ingredient.create! name: "splenda" }
+    before(:each)    { ingredient.add_substitute(substitute) }
 
     it "responds to substitutes" do
       expect(ingredient).to respond_to(:substitutes)
